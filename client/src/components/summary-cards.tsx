@@ -115,9 +115,46 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
       <Card className="border-l-4 border-[#f97316]">
         <CardContent className="pt-4">
           <h2 className="text-sm font-medium text-slate-500 mb-1">Час бадьорості</h2>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 mb-4">
             <Sun className="h-4 w-4 text-[#f97316]" />
             <span className="text-xl font-semibold">{metrics.totalAwake}</span>
+          </div>
+          
+          {/* Awake time markers */}
+          <div className="mt-4">
+            <div className="border-b border-gray-600 border-dashed mb-2"></div>
+            <div className="relative mb-2">
+              <div className="w-full flex justify-start items-end">
+                {entries.reduce((markers, entry, index, array) => {
+                  if (entry.type === 'woke-up' && index < array.length - 1 && array[index + 1].type === 'fell-asleep') {
+                    const startTime = entry.time;
+                    const endTime = array[index + 1].time;
+                    const duration = calculateDuration(startTime, endTime);
+                    const position = (index / (array.length - 2)) * 100;
+                    
+                    markers.push(
+                      <div 
+                        key={index} 
+                        className="absolute flex flex-col items-center"
+                        style={{ 
+                          left: `${position}%`,
+                          transform: 'translateX(-50%)'
+                        }}
+                      >
+                        <div className="w-5 h-5 rounded-full bg-[#f97316] flex items-center justify-center text-white text-xs">
+                          😊
+                        </div>
+                        <span className="text-[10px] md:text-xs text-muted-foreground mt-2 whitespace-nowrap">
+                          {`${String(Math.floor(duration / 60)).padStart(2, '0')}:${String(duration % 60).padStart(2, '0')}`}
+                        </span>
+                      </div>
+                    );
+                  }
+                  return markers;
+                }, [] as React.ReactNode[])}
+              </div>
+            </div>
+            <div className="border-t border-gray-600 border-dashed mt-8"></div>
           </div>
         </CardContent>
       </Card>
