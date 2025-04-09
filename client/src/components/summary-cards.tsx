@@ -91,7 +91,7 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
                     return markers;
                   }, [] as React.ReactNode[])}
                 </div>
-                <div className="border-t border-gray-600 border-dashed mt-1 mb-2"></div>
+                <div className="border-t border-gray-600 border-dashed mt-1 mb-2 mt-2"></div>
                 <div className="text-xs text-muted-foreground mt-1 flex justify-between">                
                   <span>Ціль: {formatDuration(metrics.requiredSleepMinutes)}</span>
                   {metrics.sleepCompletionPercentage < 100 && (
@@ -113,7 +113,7 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
 
       {/* Total Awake Card */}
       <Card className="border-l-4 border-[#f97316]">
-        <CardContent className="pt-4">
+        <CardContent className="pt-4 pb-16">
           <h2 className="text-sm font-medium text-slate-500 mb-1">Час бадьорості</h2>
           <div className="flex items-center space-x-2 mb-4">
             <Sun className="h-4 w-4 text-[#f97316]" />
@@ -122,7 +122,7 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
           
           {/* Awake time markers */}
           <div className="mt-4">
-            <div className="relative mb-2 translate-y-[60px]">
+            <div className="relative mb-2 translate-y-[40px]">
               <div className="w-full flex justify-start items-end">
                 {entries.reduce((markers, entry, index, array) => {
                   if (entry.type === 'woke-up' && index < array.length - 1 && array[index + 1].type === 'fell-asleep') {
