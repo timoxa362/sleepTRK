@@ -122,8 +122,7 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
           
           {/* Awake time markers */}
           <div className="mt-4">
-            <div className="border-b border-gray-600 border-dashed mb-2"></div>
-            <div className="relative mb-2">
+            <div className="relative mb-2 translate-y-[60px]">
               <div className="w-full flex justify-start items-end">
                 {entries.reduce((markers, entry, index, array) => {
                   if (entry.type === 'woke-up' && index < array.length - 1 && array[index + 1].type === 'fell-asleep') {
@@ -154,7 +153,6 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
                 }, [] as React.ReactNode[])}
               </div>
             </div>
-            <div className="border-t border-gray-600 border-dashed mt-8"></div>
           </div>
         </CardContent>
       </Card>
