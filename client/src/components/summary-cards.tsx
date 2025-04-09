@@ -53,7 +53,7 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
                 </span>
               </div>
               <div className="border-b border-gray-600 border-dashed mb-5"></div>
-              <div className="relative mb-0 md:mb-36">
+              <div className="relative mb-0 md:mb-0">
                 <div className="relative">
                   <Progress 
                     value={metrics.sleepCompletionPercentage} 
