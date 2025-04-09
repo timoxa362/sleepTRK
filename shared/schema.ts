@@ -53,4 +53,8 @@ export interface SleepMetrics {
     minutes: number;
     type: 'nap' | 'bedtime';
   }; // Time until next scheduled sleep (nap or bedtime)
+  sleepPeriods?: Array<{
+    duration: string; // Formatted duration (e.g. "1год. 30хв.")
+    type: 'sleep' | 'awake';
+  }>;
 }

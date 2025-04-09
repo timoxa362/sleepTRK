@@ -91,7 +91,7 @@ export default function Home() {
         />
       </div>
 
-      <SummaryCards metrics={metrics} />
+      <SummaryCards metrics={metrics} entries={entries} />
       <TimeEntryForm entries={entries} selectedDate={selectedDate} />
       <TimelineDisplay entries={entries} selectedDate={selectedDate} />
       

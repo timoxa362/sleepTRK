@@ -490,6 +490,32 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
+    // Calculate periods between sleep and wake events
+    const sleepPeriods = [];
+    for (let i = 0; i < entries.length - 1; i++) {
+      const current = entries[i];
+      const next = entries[i + 1];
+      
+      const currentTime = timeToMinutes(current.time);
+      const nextTime = timeToMinutes(next.time);
+      
+      // Calculate duration in minutes
+      let duration = nextTime - currentTime;
+      if (duration < 0) {
+        duration += 24 * 60; // Add 24 hours if crossing midnight
+      }
+      
+      // Format duration
+      const hours = Math.floor(duration / 60);
+      const minutes = duration % 60;
+      const formattedDuration = `${hours}год. ${minutes}хв.`;
+      
+      sleepPeriods.push({
+        duration: formattedDuration,
+        type: current.type === 'fell-asleep' ? 'sleep' : 'awake'
+      });
+    }
+
     return {
       totalSleepMinutes,
       totalAwakeMinutes,
@@ -497,7 +523,8 @@ export class DatabaseStorage implements IStorage {
       date,
       requiredSleepMinutes,
       sleepCompletionPercentage,
-      timeToNextScheduledSleep
+      timeToNextScheduledSleep,
+      sleepPeriods
     };
   }
   
