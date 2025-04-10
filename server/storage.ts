@@ -575,7 +575,7 @@ export class DatabaseStorage implements IStorage {
     
     // Фільтруємо дати, які не перевищують поточну дату, максимум daysToAverage днів
     const targetDates = availableDates
-      .filter(date => date <= currentDate)
+      .filter(date => date < currentDate)
       .slice(0, daysToAverage);
     
     if (targetDates.length === 0) {
