@@ -25,11 +25,41 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
   // Calculate today's date for comparison
   const today = new Date().toISOString().split('T')[0];
   const isToday = metrics.date === today;
+  const currentHour = new Date().getHours();
 
   // Grid columns depend on whether we show the next sleep timer
   const gridCols = isToday && metrics.timeToNextScheduledSleep 
     ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4" 
     : "grid-cols-1 md:grid-cols-3";
+
+  // --- Calculate unaccounted time in the 24h cycle (potential remaining time) ---
+  let potentialRemainingTimeStr: string | null = null;
+  if (isToday && currentHour >= 17) {
+    try {
+      // Scenario B: totalSleep = naps only, nightSleep is separate.
+      const totalNapMinutes = metrics.totalSleep ? parseSleepDuration(metrics.totalSleep) : 0;
+      const totalAwakeMinutes = metrics.totalAwake ? parseSleepDuration(metrics.totalAwake) : 0;
+      const nightSleepMinutes = metrics.nightSleep ? parseSleepDuration(metrics.nightSleep) : 0; // Parse night sleep too
+      const totalDayMinutes = 24 * 60; // 1440
+
+      // Calculate time *not yet accounted for* using the user's formula
+      const unaccountedMinutes = totalDayMinutes - totalNapMinutes - totalAwakeMinutes - nightSleepMinutes;
+
+      const remainingMinutesClamped = Math.max(0, unaccountedMinutes);
+
+      if (remainingMinutesClamped > 0) {
+        // Now this label makes more sense if the calculation is correct for the data structure
+        potentialRemainingTimeStr = `До нічного сну лишилось: ${formatDurationGrammatical(remainingMinutesClamped)}`;
+      } else if (totalNapMinutes > 0 || totalAwakeMinutes > 0 || nightSleepMinutes > 0) {
+          potentialRemainingTimeStr = `Добовий цикл враховано`;
+      }
+
+    } catch (error) {
+      console.error("Error calculating potential remaining time:", error);
+      potentialRemainingTimeStr = "Помилка розрахунку часу";
+    }
+  }
+  // --- End calculation ---
 
   return (
     <div className={`grid ${gridCols} gap-4 mb-8`}>
@@ -48,8 +78,8 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
               <div className="flex justify-between text-xs text-muted-foreground mb-3">
                 <span>Від необхідного</span>
                 <span className="font-semibold flex items-center">
+                  {metrics.sleepCompletionPercentage}
                   <Percent className="h-3 w-3 mr-1" />
-                  {metrics.sleepCompletionPercentage}%
                 </span>
               </div>
               <div className="border-b border-gray-600 border-dashed mb-5"></div>
@@ -164,6 +194,13 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
           <div className="flex items-center space-x-2">
             <Bed className="h-4 w-4 text-blue-500" />
             <span className="text-xl font-semibold">{metrics.nightSleep}</span>
+          </div>
+          <div className="flex items-center space-x-2">
+          <Moon className="h-4 w-4 text-[#8b5cf6]" />
+          {potentialRemainingTimeStr && (
+             // Using the label reflecting the calculation (unaccounted time)
+            <p className="text-xs text-muted-foreground mb-1">{potentialRemainingTimeStr}</p>
+          )}
           </div>
         </CardContent>
       </Card>

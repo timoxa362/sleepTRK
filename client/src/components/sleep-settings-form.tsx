@@ -140,7 +140,7 @@ export function SleepSettingsForm() {
               )}
             />
             
-            <div className="pt-4 border-t mt-6">
+            {/* <div className="pt-4 border-t mt-6">
               <h3 className="text-base font-medium mb-4">Запланований час сну</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
@@ -185,7 +185,7 @@ export function SleepSettingsForm() {
                   )}
                 />
               </div>
-            </div>
+            </div> */}
             
             <div className="mt-6">
               <Button type="submit" disabled={mutation.isPending}>
