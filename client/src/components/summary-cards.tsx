@@ -49,7 +49,7 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
 
       if (remainingMinutesClamped > 0) {
         // Now this label makes more sense if the calculation is correct for the data structure
-        potentialRemainingTimeStr = `До нічного сну лишилось: ${formatDurationGrammatical(remainingMinutesClamped)}`;
+        potentialRemainingTimeStr = `${formatDurationGrammatical(remainingMinutesClamped)}`;
       } else if (totalNapMinutes > 0 || totalAwakeMinutes > 0 || nightSleepMinutes > 0) {
           potentialRemainingTimeStr = `Добовий цикл враховано`;
       }
@@ -195,12 +195,12 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
             <Bed className="h-4 w-4 text-blue-500" />
             <span className="text-xl font-semibold">{metrics.nightSleep}</span>
           </div>
-          <div className="flex items-center space-x-2">
           <div className="border-b border-gray-600 border-dashed mb-5"></div>
-          <Moon className="h-4 w-4 text-[#8b5cf6]" />
+          <div className="flex items-center space-x-2">
+                    <Moon className="h-4 w-4 text-[#8b5cf6]" />
           {potentialRemainingTimeStr && (
              // Using the label reflecting the calculation (unaccounted time)
-            <p className="text-xs text-muted-foreground mb-3">{potentialRemainingTimeStr}</p>
+            <p className="text-xs text-muted-foreground mb-3">До нічного сну лишилось: <span class="font-bold text-purple-500">{potentialRemainingTimeStr}</span></p>
           )}
           </div>
         </CardContent>
