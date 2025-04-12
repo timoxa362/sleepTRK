@@ -195,9 +195,7 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
             <Bed className="h-4 w-4 text-blue-500" />
             <span className="text-xl font-semibold">{metrics.nightSleep}</span>
           </div>
-          <div className="border-b border-gray-600 border-dashed mb-5"></div>
-          <div className="flex items-center space-x-2">
-                    <Moon className="h-4 w-4 text-[#8b5cf6]" />
+          <div className="flex items-center space-x-2">                    
           {potentialRemainingTimeStr && (
              // Using the label reflecting the calculation (unaccounted time)
             <p className="text-xs text-muted-foreground mb-3">До нічного сну лишилось: <span class="font-bold text-purple-500">{potentialRemainingTimeStr}</span></p>
