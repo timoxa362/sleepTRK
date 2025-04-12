@@ -34,7 +34,7 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
 
   // --- Calculate unaccounted time in the 24h cycle (potential remaining time) ---
   let potentialRemainingTimeStr: string | null = null;
-  if (isToday && currentHour >= 17) {
+  if (isToday && currentHour >= 17 && currentHour <= 20) {
     try {
       // Scenario B: totalSleep = naps only, nightSleep is separate.
       const totalNapMinutes = metrics.totalSleep ? parseSleepDuration(metrics.totalSleep) : 0;
