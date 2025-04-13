@@ -64,7 +64,7 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
         // Convert the predicted total minutes back to HH:MM format
         const predictedTime = formatDuration(predictedBedtimeMinutes);
 
-        predictedNightBedtimeStr = `Прогноз нічного сну: ${predictedTime}`;
+        predictedNightBedtimeStr = `${predictedTime}`;
 
       } else if (!lastWakeUpEntry) {
         // Handle case where there's no wake-up entry yet today
@@ -217,9 +217,9 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
             <span className="text-xl font-semibold">{metrics.nightSleep}</span>
           </div>
           <div className="flex items-center space-x-2">                    
-          {potentialRemainingTimeStr && (
+          {predictedNightBedtimeStr  && (
              // Using the label reflecting the calculation (unaccounted time)
-            <p className="text-xs text-muted-foreground mb-3">Нічний сон о: <span class="font-bold text-purple-500">{potentialRemainingTimeStr}</span></p>
+            <p className="text-xs text-muted-foreground mb-3">Нічний сон о: <span class="font-bold text-purple-500">{predictedNightBedtimeStr }</span></p>
           )}
           </div>
         </CardContent>
