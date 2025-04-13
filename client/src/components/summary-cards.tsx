@@ -31,32 +31,53 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
   const gridCols = isToday && metrics.timeToNextScheduledSleep 
     ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4" 
     : "grid-cols-1 md:grid-cols-3";
-
-  // --- Calculate unaccounted time in the 24h cycle (potential remaining time) ---
-  let potentialRemainingTimeStr: string | null = null;
-  if (isToday && currentHour >= 17 && currentHour <= 20) {
+  // --- Calculate predicted night bedtime ---
+  let predictedNightBedtimeStr: string | null = null;
+  if (isToday && currentHour >= 17 && entries.length > 0) {
     try {
-      // Scenario B: totalSleep = naps only, nightSleep is separate.
-      const totalNapMinutes = metrics.totalSleep ? parseSleepDuration(metrics.totalSleep) : 0;
-      const totalAwakeMinutes = metrics.totalAwake ? parseSleepDuration(metrics.totalAwake) : 0;
-      const nightSleepMinutes = metrics.nightSleep ? parseSleepDuration(metrics.nightSleep) : 0; // Parse night sleep too
-      const totalDayMinutes = 24 * 60; // 1440
+      const lastWakeUpEntry = entries.slice().reverse().find(entry => entry.type === 'woke-up');
 
-      // Calculate time *not yet accounted for* using the user's formula
-      const unaccountedMinutes = totalDayMinutes - totalNapMinutes - totalAwakeMinutes - nightSleepMinutes;
+      // Check if all necessary metrics and the last wake-up entry exist
+      if (lastWakeUpEntry && metrics.totalSleep && metrics.totalAwake && metrics.nightSleep !== undefined) { // Check nightSleep specifically
+        const lastWakeUpTime = lastWakeUpEntry.time;
+        const lastWakeUpMinutes = timeToMinutes(lastWakeUpTime);
 
-      const remainingMinutesClamped = Math.max(0, unaccountedMinutes);
+        // --- Apply the user's specified calculation ---
+        // Assuming metrics.totalSleep = Naps only
+        const totalNapMinutes = parseSleepDuration(metrics.totalSleep);
+        const totalAwakeMinutes = parseSleepDuration(metrics.totalAwake);
+        // Handle nightSleep potentially being "0год. 0хв." or similar -> parse to 0
+        const nightSleepMinutes = metrics.nightSleep ? parseSleepDuration(metrics.nightSleep) : 0;
+        const totalDayMinutes = 24 * 60; // 1440
 
-      if (remainingMinutesClamped > 0) {
-        // Now this label makes more sense if the calculation is correct for the data structure
-        potentialRemainingTimeStr = `${formatDurationGrammatical(remainingMinutesClamped)}`;
-      } else if (totalNapMinutes > 0 || totalAwakeMinutes > 0 || nightSleepMinutes > 0) {
-          potentialRemainingTimeStr = `Добовий цикл враховано`;
+        // Calculate time *not yet accounted for* using the formula:
+        // 24h - Naps - Awake - Night Sleep
+        const unaccountedMinutesCalc = totalDayMinutes - totalNapMinutes - totalAwakeMinutes - nightSleepMinutes;
+
+        // Ensure the duration added is not negative.
+        const unaccountedMinutes = Math.max(0, unaccountedMinutesCalc);
+        // --- End of user's specified calculation ---
+
+        // Add unaccounted time to the last wake-up time
+        const predictedBedtimeMinutes = lastWakeUpMinutes + unaccountedMinutes;
+
+        // Convert the predicted total minutes back to HH:MM format
+        const predictedTime = formatDuration(predictedBedtimeMinutes);
+
+        predictedNightBedtimeStr = `Прогноз нічного сну: ${predictedTime}`;
+
+      } else if (!lastWakeUpEntry) {
+        // Handle case where there's no wake-up entry yet today
+        predictedNightBedtimeStr = "Немає даних для прогнозу";
+      } else {
+        // Handle cases where some metrics might be missing (e.g., nightSleep is null/undefined initially)
+        predictedNightBedtimeStr = "Недостатньо даних для прогнозу";
       }
 
     } catch (error) {
-      console.error("Error calculating potential remaining time:", error);
-      potentialRemainingTimeStr = "Помилка розрахунку часу";
+      console.error("Error calculating predicted night bedtime:", error);
+      // Consider more specific error messages based on parsing failures if needed
+      predictedNightBedtimeStr = "Помилка прогнозу";
     }
   }
   // --- End calculation ---
@@ -198,7 +219,7 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
           <div className="flex items-center space-x-2">                    
           {potentialRemainingTimeStr && (
              // Using the label reflecting the calculation (unaccounted time)
-            <p className="text-xs text-muted-foreground mb-3">До нічного сну лишилось: <span class="font-bold text-purple-500">{potentialRemainingTimeStr}</span></p>
+            <p className="text-xs text-muted-foreground mb-3">Нічний сон о: <span class="font-bold text-purple-500">{potentialRemainingTimeStr}</span></p>
           )}
           </div>
         </CardContent>
