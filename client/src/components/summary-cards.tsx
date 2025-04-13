@@ -33,7 +33,7 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
     : "grid-cols-1 md:grid-cols-3";
   // --- Calculate predicted night bedtime ---
   let predictedNightBedtimeStr: string | null = null;
-  if (isToday && currentHour >= 17 && entries.length > 0) {
+  if (isToday && currentHour >= 17 && entries.length > 0 && currentHour <= 20) {
     try {
       const lastWakeUpEntry = entries.slice().reverse().find(entry => entry.type === 'woke-up');
 
