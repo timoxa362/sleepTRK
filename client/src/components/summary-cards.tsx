@@ -213,7 +213,18 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
             <span className="text-xl font-semibold">{metrics.totalAwake}</span>
           </div>
           <div className="flex items-center space-x-2 mb-4">
-          {currentWakeDurationStr && (<p className="text-sm text-orange-600 font-medium -mt-2 mb-4">Тривалість бадьорості зараз: {currentWakeDurationStr}</p>)}
+            {currentWakeDurationStr && (
+              <p className="text-sm -mt-2 mb-4"> {/* Keep base styles like text-sm and margins */}
+                {/* Span for the label: gray, normal weight */}
+                <span className="text-muted-foreground font-normal"> {/* Use text-muted-foreground for standard gray */}
+                  Тривалість бадьорості зараз:
+                </span>
+                {/* Span for the value: orange, medium weight, add a small space */}
+                <span className="text-orange-600 font-medium ml-1"> {/* Keep original orange/medium, add margin-left */}
+                  {currentWakeDurationStr}
+                </span>
+              </p>
+            )}
           </div>
           
           {/* Awake time markers */}
