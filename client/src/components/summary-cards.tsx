@@ -3,8 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Moon, Sun, Bed, Percent, AlarmClock } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { SleepMetrics } from "@/lib/types";
-import { formatDuration, formatDurationGrammatical, timeToMinutes, minutesToTime, calculateDuration } from "@/lib/utils";
-import { parseSleepDuration, calculateRemainingTime, calculateExcessTime } from "@/lib/sleepUtils";''
+import { formatDuration, formatDurationGrammatical, timeToMinutes, calculateDuration } from "@/lib/utils";
+import { parseSleepDuration, calculateRemainingTime, calculateExcessTime } from "@/lib/sleepUtils";
 
 interface TimeEntry {
   type: 'fell-asleep' | 'woke-up';

@@ -13,6 +13,12 @@ export function timeToMinutes(timeStr: string): number {
   return hours * 60 + minutes;
 }
 
+export function calculateDuration(startTime: string, endTime: string): number {
+  const start = timeToMinutes(startTime);
+  const end = timeToMinutes(endTime);
+  return end < start ? (24 * 60 - start) + end : end - start;
+}
+
 // Format minutes as hours and minutes string
 export function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / 60);
