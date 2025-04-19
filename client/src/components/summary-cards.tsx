@@ -1,15 +1,10 @@
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Moon, Sun, Bed, Percent, AlarmClock } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { SleepMetrics } from "@/lib/types";
-import { formatDuration, formatDurationGrammatical, timeToMinutes } from "@/lib/utils";
-
-function calculateDuration(startTime: string, endTime: string): number {
-  const start = timeToMinutes(startTime);
-  const end = timeToMinutes(endTime);
-  return end < start ? (24 * 60 - start) + end : end - start;
-}
-import { parseSleepDuration, calculateRemainingTime, calculateExcessTime } from "@/lib/sleepUtils";
+import { formatDuration, formatDurationGrammatical, timeToMinutes, minutesToTime, calculateDuration } from "@/lib/utils";
+import { parseSleepDuration, calculateRemainingTime, calculateExcessTime } from "@/lib/sleepUtils";''
 
 interface TimeEntry {
   type: 'fell-asleep' | 'woke-up';
@@ -26,6 +21,9 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
   const today = new Date().toISOString().split('T')[0];
   const isToday = metrics.date === today;
   const currentHour = new Date().getHours();
+
+  // --- State for dynamic wakefulness duration ---
+  const [currentWakeDurationStr, setCurrentWakeDurationStr] = useState<string | null>(null);
 
   // Grid columns depend on whether we show the next sleep timer
   const gridCols = isToday && metrics.timeToNextScheduledSleep 
@@ -81,6 +79,50 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
     }
   }
   // --- End calculation ---
+
+  // --- Effect to calculate and update current wakefulness duration ---
+  useEffect(() => {
+    // ***** FIX: Use 'number' instead of 'NodeJS.Timeout' *****
+    let intervalId: number | null = null;
+    // **********************************************************
+
+    const calculateCurrentWakefulness = () => {
+      if (entries.length > 0 && isToday) {
+        const lastEntry = entries[entries.length - 1];
+        if (lastEntry.type === 'woke-up') {
+          const now = new Date();
+          const currentMinutes = now.getHours() * 60 + now.getMinutes();
+          const lastWakeUpMinutes = timeToMinutes(lastEntry.time);
+          let durationMinutes = currentMinutes - lastWakeUpMinutes;
+          if (durationMinutes < 0) { // Handle midnight crossing
+            durationMinutes = (24 * 60 - lastWakeUpMinutes) + currentMinutes;
+          }
+          if (durationMinutes >= 0) {
+            setCurrentWakeDurationStr(formatDurationGrammatical(durationMinutes));
+            return true; // Timer needed
+          }
+        }
+      }
+      // Reset if conditions not met
+      setCurrentWakeDurationStr(null);
+      return false; // Timer not needed
+    };
+
+    const needsTimer = calculateCurrentWakefulness(); // Initial calculation
+
+    if (needsTimer) {
+      // window.setInterval returns a number in browsers
+      intervalId = window.setInterval(calculateCurrentWakefulness, 60000); // Use window.setInterval explicitly if needed
+    }
+
+    // Cleanup function (clearInterval works with the number ID)
+    return () => {
+      if (intervalId !== null) { // Check for null before clearing
+        clearInterval(intervalId);
+      }
+    };
+  }, [entries, isToday]); // Dependencies
+  // --- End effect ---
 
   return (
     <div className={`grid ${gridCols} gap-4 mb-8`}>
@@ -169,6 +211,9 @@ export function SummaryCards({ metrics, entries }: SummaryCardsProps) {
           <div className="flex items-center space-x-2 mb-4">
             <Sun className="h-4 w-4 text-[#f97316]" />
             <span className="text-xl font-semibold">{metrics.totalAwake}</span>
+          </div>
+          <div className="flex items-center space-x-2 mb-4">
+          {currentWakeDurationStr && (<p className="text-sm text-orange-600 font-medium -mt-2 mb-4">Тривалість бадьорості зараз: {currentWakeDurationStr}</p>)}
           </div>
           
           {/* Awake time markers */}

@@ -20,6 +20,15 @@ export function formatDuration(minutes: number): string {
   return `${hours}год. ${mins}хв.`;
 }
 
+// Helper function (ensure this exists in your utils or define it here)
+export function minutesToTime(totalMinutes: number): string {
+  if (isNaN(totalMinutes) || totalMinutes < 0) return "00:00";
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = Math.round(totalMinutes % 60);
+  const displayHours = hours % 24;
+  return `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
 // Format minutes with grammatically correct Ukrainian words for hours and minutes
 export function formatDurationGrammatical(minutes: number): string {
   const hours = Math.floor(minutes / 60);
